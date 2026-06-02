@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Dashboard</h2>
+
+<form action="/create-or-edit-credential" method="post">
+    <div class="form-group">
+        <label for="name">Name</label>
+        <input type="text" class="form-control" id="name" name="name" required>
+    </div>
+    <div class="form-group">
+        <label for="url">URL</label>
+        <input type="text" class="form-control" id="url" name="url" required>
+    </div>
+    <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" class="form-control" id="username" name="username" required>
+    </div>
+    <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" class="form-control" id="password" name="password" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Save Credential</button>
+</form>
+
+<table class="table mt-3">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>URL</th>
+            <th>Username</th>
+            <!-- No password column -->
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody id="credential-list">
+        {% for credential in credentials %}
+        <tr>
+            <td>{{ credential.name }}</td>
+            <td>{{ credential.url }}</td>
+            <td>{{ credential.username }}</td>
+            <td>
+                <button class="btn btn-danger" onclick="revealPassword('{{ credential.id }}')">Reveal Password</button>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<div id="password-reveal-modal" class="modal fade" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Reveal Password</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <input type="password" class="form-control" id="revealed-password" readonly>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function revealPassword(credentialId) {
+    const passwordField = document.getElementById(`password-${credentialId}`);
+    const modal = document.getElementById('password-reveal-modal');
+    modal.querySelector('#revealed-password').value = passwordField.value;
+    modal.show();
+}
+</script>
+{% endblock %}
+</write_to_file>

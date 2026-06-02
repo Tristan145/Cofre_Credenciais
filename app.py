@@ -1,31 +1,31 @@
-from flask import Flask, request, jsonify
-from models import db, ma, Credential
+from flask import Flask, render_template, request, flash
+import models
 from security import encrypt_string, decrypt_string
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///cofre.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db.init_app(app)
-ma.init_app(app)
+app.secret_key = 'your_secret_key'
 
-# User model for demonstration purposes (assuming it's already defined elsewhere)
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+@app.route('/')
+def dashboard():
+    credentials = models.Credential.query.all()
+    return render_template('dashboard.html', credentials=credentials)
 
-@app.route('/credentials', methods=['POST'])
-@app.route('/credentials', methods=['GET'])
-def list_credentials():
-    user_id = request.args.get('user_id')
-    credentials = Credential.query.filter_by(user_id=user_id).all()
-    schema = CredentialSchema(many=True)
-    result = schema.dump(credentials)
-    return jsonify(result)
+@app.route('/create-or-edit-credential', methods=['GET', 'POST'])
+def create_or_edit_credential():
+    if request.method == 'POST':
+        name = request.form['name']
+        url = request.form['url']
+        username = request.form['username']
+        password = request.form['password']
 
-@app.route('/credentials/<int:id>', methods=['PUT'])
-@app.route('/credentials/<int:id>', methods=['DELETE'])
-def delete_credential(id):
-    user_id = request.args.get('user_id')
-    credential = Credential.query.get_or_404(id)
+        new_credential = models.Credential(name=name, url=url, username=username, password=password)
+        models.db.session.add(new_credential)
+        models.db.session.commit()
+
+        flash('Credential saved!', 'success')
+        return redirect(url_for('dashboard'))
+
+    return render_template('create_or_edit_credential.html')
     if credential.user_id != user_id:
         return jsonify({'message': 'Access denied'}), 403
 
