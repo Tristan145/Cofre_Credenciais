@@ -1,78 +1,78 @@
 {% extends "base.html" %}
-
 {% block content %}
-<h2>Dashboard</h2>
+<h2 class="mb-4">Minhas Credenciais</h2>
 
-<form action="/create-or-edit-credential" method="post">
-    <div class="form-group">
-        <label for="name">Name</label>
-        <input type="text" class="form-control" id="name" name="name" required>
+<div class="card mb-4">
+    <div class="card-header">Adicionar Nova Senha</div>
+    <div class="card-body">
+        <form action="/create-credential" method="post">
+            <div class="row mb-3">
+                <div class="col">
+                    <input type="text" class="form-control" name="service" placeholder="Serviço (ex: Netflix)" required>
+                </div>
+                <div class="col">
+                    <input type="text" class="form-control" name="username" placeholder="Login/Usuário" required>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-8">
+                    <input type="text" class="form-control" id="password" name="password" placeholder="Senha" required>
+                </div>
+                <div class="col-4">
+                    <button type="button" class="btn btn-warning w-100" onclick="generatePassword()">Gerar Senha Forte</button>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Salvar no Cofre</button>
+        </form>
     </div>
-    <div class="form-group">
-        <label for="url">URL</label>
-        <input type="text" class="form-control" id="url" name="url" required>
-    </div>
-    <div class="form-group">
-        <label for="username">Username</label>
-        <input type="text" class="form-control" id="username" name="username" required>
-    </div>
-    <div class="form-group">
-        <label for="password">Password</label>
-        <input type="password" class="form-control" id="password" name="password" required>
-    </div>
-    <button type="submit" class="btn btn-primary">Save Credential</button>
-</form>
+</div>
 
-<table class="table mt-3">
+<table class="table table-striped">
     <thead>
         <tr>
-            <th>Name</th>
-            <th>URL</th>
-            <th>Username</th>
-            <!-- No password column -->
-            <th>Action</th>
+            <th>Serviço</th>
+            <th>Usuário</th>
+            <th>Ação</th>
         </tr>
     </thead>
-    <tbody id="credential-list">
-        {% for credential in credentials %}
+    <tbody>
+        {% for cred in credentials %}
         <tr>
-            <td>{{ credential.name }}</td>
-            <td>{{ credential.url }}</td>
-            <td>{{ credential.username }}</td>
+            <td>{{ cred.service }}</td>
+            <td>{{ cred.username }}</td>
             <td>
-                <button class="btn btn-danger" onclick="revealPassword('{{ credential.id }}')">Reveal Password</button>
+                <button class="btn btn-sm btn-info" onclick="revealPassword('{{ cred.id }}')">Revelar Senha</button>
+                <span id="revealed-{{ cred.id }}" class="ms-2 fw-bold text-danger"></span>
             </td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
 
-<div id="password-reveal-modal" class="modal fade" tabindex="-1" role="dialog">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Reveal Password</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <input type="password" class="form-control" id="revealed-password" readonly>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-      </div>
-    </div>
-  </div>
-</div>
-
 <script>
-function revealPassword(credentialId) {
-    const passwordField = document.getElementById(`password-${credentialId}`);
-    const modal = document.getElementById('password-reveal-modal');
-    modal.querySelector('#revealed-password').value = passwordField.value;
-    modal.show();
+// Lógica do Gerador de Senhas (puro JS)
+function generatePassword() {
+    const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+";
+    let password = "";
+    for (let i = 0; i < 16; i++) {
+        password += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    document.getElementById('password').value = password;
+}
+
+// Lógica para descriptografar e mostrar a senha
+function revealPassword(credId) {
+    fetch('/revelar_senha/' + credId, {
+        method: 'POST'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if(data.password) {
+            document.getElementById('revealed-' + credId).innerText = data.password;
+        } else {
+            alert('Erro ao descriptografar.');
+        }
+    });
 }
 </script>
 {% endblock %}
-</write_to_file>

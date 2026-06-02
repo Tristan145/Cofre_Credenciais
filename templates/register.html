@@ -1,26 +1,19 @@
 {% extends "base.html" %}
-
 {% block content %}
-<h2>Register</h2>
-<form method="post">
-    {{ form.hidden_tag() }}
-    <p>
-        {{ form.username.label }}<br>
-        {{ form.username(size=32) }}
-    </p>
-    <p>
-        {{ form.email.label }}<br>
-        {{ form.email(size=64) }}
-    </p>
-    <p>
-        {{ form.password.label }}<br>
-        {{ form.password(size=32) }}
-    </p>
-    <p>
-        {{ form.confirm_password.label }}<br>
-        {{ form.confirm_password(size=32) }}
-    </p>
-    <p><input type="submit" value="Register"></p>
-</form>
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <h2 class="mb-3">Cadastro</h2>
+        <form method="post" action="/register">
+            <div class="mb-3">
+                <label>Usuário</label>
+                <input type="text" name="username" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label>Senha</label>
+                <input type="password" name="password" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-success w-100">Cadastrar</button>
+        </form>
+    </div>
+</div>
 {% endblock %}
-</write_to_file>

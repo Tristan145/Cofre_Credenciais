@@ -1,0 +1,20 @@
+# Ambientes virtuais (Python venv)
+venv/
+ENV/
+env/
+lib64/
+
+# Caches do Python
+__pycache__/
+*.pyc
+
+# Dependências do Node (JavaScript)
+node_modules/
+.package-lock.json
+
+# Banco de dados local (opcional, caso não queira subir seu banco de testes)
+instance/
+*.db
+
+# Arquivos de configuração sensíveis (Chaves de API, senhas)
+.env
